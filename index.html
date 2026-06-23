@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI가 당신의 하루를 따뜻하게 분석해 주는 감정 일기장">
+  <title>AI 감정 일기장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-background"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">🌸</span>
+        <div>
+          <h1>AI 감정 일기장</h1>
+          <p>오늘의 마음을 기록하고, AI가 따뜻하게 분석해 드려요</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 일기 작성 섹션 -->
+    <section class="card write-section" aria-labelledby="write-title">
+      <h2 id="write-title" class="section-title">
+        <span aria-hidden="true">✏️</span> 오늘의 일기
+      </h2>
+
+      <div class="form-group">
+        <label for="diary-date">날짜</label>
+        <input type="date" id="diary-date" class="input-date">
+      </div>
+
+      <div class="form-group">
+        <label for="diary-content">일기 내용</label>
+        <textarea
+          id="diary-content"
+          class="textarea"
+          rows="8"
+          placeholder="오늘 있었던 일, 느꼈던 감정을 자유롭게 적어 보세요..."
+          maxlength="3000"
+        ></textarea>
+        <span class="char-count"><span id="char-count">0</span> / 3000</span>
+      </div>
+
+      <button type="button" id="analyze-btn" class="btn-primary">
+        <span class="btn-text">감정 분석하기</span>
+        <span class="btn-icon" aria-hidden="true">💫</span>
+      </button>
+
+      <!-- 로딩 -->
+      <div id="loading" class="loading hidden" role="status" aria-live="polite">
+        <div class="loading-spinner"></div>
+        <p>AI가 당신의 마음을 읽고 있어요...</p>
+      </div>
+
+      <!-- 분석 결과 -->
+      <div id="result" class="result hidden" aria-live="polite">
+        <div class="result-header">
+          <span id="result-emoji" class="result-main-emoji" aria-hidden="true">😊</span>
+          <h3>감정 분석 결과</h3>
+        </div>
+        <div id="emotion-bars" class="emotion-bars"></div>
+        <p id="encouragement" class="encouragement"></p>
+        <button type="button" id="save-btn" class="btn-secondary">일기 저장하기</button>
+      </div>
+
+      <p id="error-msg" class="error-msg hidden" role="alert"></p>
+    </section>
+
+    <!-- 일기 목록 섹션 -->
+    <section class="card history-section" aria-labelledby="history-title">
+      <div class="history-header">
+        <h2 id="history-title" class="section-title">
+          <span aria-hidden="true">📚</span> 나의 일기 기록
+        </h2>
+        <div class="view-toggle" role="group" aria-label="보기 방식 선택">
+          <button type="button" id="view-list" class="toggle-btn active" aria-pressed="true">
+            📋 리스트
+          </button>
+          <button type="button" id="view-calendar" class="toggle-btn" aria-pressed="false">
+            📅 달력
+          </button>
+        </div>
+      </div>
+
+      <div class="month-nav">
+        <button type="button" id="prev-month" class="nav-btn" aria-label="이전 달">‹</button>
+        <h3 id="current-month-label" class="month-label"></h3>
+        <button type="button" id="next-month" class="nav-btn" aria-label="다음 달">›</button>
+      </div>
+
+      <!-- 월간 감정 요약 -->
+      <div id="month-summary" class="month-summary" aria-label="이번 달 감정 요약"></div>
+
+      <!-- 리스트 뷰 -->
+      <div id="list-view" class="list-view"></div>
+
+      <!-- 달력 뷰 -->
+      <div id="calendar-view" class="calendar-view hidden">
+        <div class="calendar-weekdays">
+          <span>일</span><span>월</span><span>화</span><span>수</span>
+          <span>목</span><span>금</span><span>토</span>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+      </div>
+
+      <p id="empty-state" class="empty-state hidden">
+        아직 저장된 일기가 없어요. 첫 번째 일기를 작성해 보세요! 🌱
+      </p>
+    </section>
+  </main>
+
+  <!-- 일기 상세 모달 -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-content">
+      <button type="button" id="modal-close" class="modal-close" aria-label="닫기">×</button>
+      <h3 id="modal-title" class="modal-title"></h3>
+      <p id="modal-date" class="modal-date"></p>
+      <div id="modal-emotions" class="modal-emotions"></div>
+      <p id="modal-content" class="modal-body"></p>
+      <p id="modal-encouragement" class="modal-encouragement"></p>
+      <button type="button" id="modal-delete" class="btn-danger">이 일기 삭제</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>마음을 기록하는 작은 습관이 큰 위로가 됩니다 💜</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

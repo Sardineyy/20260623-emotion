@@ -1,0 +1,11 @@
+# API 키가 들어 있는 로컬 환경 변수 (절대 Git에 올리지 마세요)
+.env
+.env.local
+.env.*.local
+
+# Vercel 로컬 설정
+.vercel
+
+# OS / 에디터
+.DS_Store
+Thumbs.db

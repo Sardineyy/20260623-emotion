@@ -17,6 +17,9 @@ const EMOTION_COLORS = {
   피로: "#94a3b8",
   외로움: "#818cf8",
   설렘: "#fb923c",
+  좌절: "#fb7185",
+  스트레스: "#f97316",
+  즐거움: "#fbbf24",
   default: "#c4b5fd",
 };
 
@@ -39,6 +42,7 @@ const prevMonthBtn = document.getElementById("prev-month");
 const nextMonthBtn = document.getElementById("next-month");
 const currentMonthLabel = document.getElementById("current-month-label");
 const monthSummary = document.getElementById("month-summary");
+const emotionFilterHint = document.getElementById("emotion-filter-hint");
 const listView = document.getElementById("list-view");
 const calendarView = document.getElementById("calendar-view");
 const calendarGrid = document.getElementById("calendar-grid");
@@ -56,10 +60,11 @@ const modalDelete = document.getElementById("modal-delete");
 
 // ===== 상태 =====
 let currentAnalysis = null;
-let currentView = "list";
+let currentView = "calendar";
 let viewYear = new Date().getFullYear();
 let viewMonth = new Date().getMonth();
 let selectedEntryId = null;
+let selectedEmotionFilter = null;
 
 // ===== 초기화 =====
 function init() {
@@ -275,6 +280,7 @@ function getMonthEntries(entries, year, month) {
 function renderMonthSummary(monthEntries) {
   if (monthEntries.length === 0) {
     monthSummary.innerHTML = '<span class="month-summary-empty">이 달에 기록된 감정이 아직 없어요</span>';
+    updateEmotionFilterHint();
     return;
   }
 
@@ -297,15 +303,66 @@ function renderMonthSummary(monthEntries) {
     .slice(0, 5);
 
   monthSummary.innerHTML = sorted
-    .map(
-      (e) => `
-      <span class="summary-chip">
+    .map((e) => {
+      const isActive = selectedEmotionFilter === e.name;
+      return `
+      <button
+        type="button"
+        class="summary-chip${isActive ? " active" : ""}"
+        data-emotion="${escapeHtml(e.name)}"
+        aria-pressed="${isActive}"
+        title="${isActive ? "필터 해제" : "달력에서 이 감정이 두드러진 날 보기"}"
+      >
         <span class="summary-chip-emoji">${e.emoji}</span>
         ${e.name} ${e.avg}%
-      </span>
-    `
-    )
+      </button>
+    `;
+    })
     .join("");
+
+  monthSummary.querySelectorAll(".summary-chip").forEach((chip) => {
+    chip.addEventListener("click", () => toggleEmotionFilter(chip.dataset.emotion));
+  });
+
+  updateEmotionFilterHint(sorted);
+}
+
+function getEmotionPercentage(entry, emotionName) {
+  const emo = entry.emotions.find((e) => e.name === emotionName);
+  return emo ? emo.percentage : 0;
+}
+
+function isEmotionProminent(entry, emotionName) {
+  const pct = getEmotionPercentage(entry, emotionName);
+  if (pct === 0) return false;
+  const maxPct = Math.max(...entry.emotions.map((e) => e.percentage));
+  return pct >= 20 || pct === maxPct;
+}
+
+function toggleEmotionFilter(emotionName) {
+  selectedEmotionFilter = selectedEmotionFilter === emotionName ? null : emotionName;
+
+  if (currentView !== "calendar") {
+    switchView("calendar");
+    return;
+  }
+
+  const monthEntries = getMonthEntries(getEntries(), viewYear, viewMonth);
+  renderMonthSummary(monthEntries);
+  renderCalendarView(monthEntries);
+}
+
+function updateEmotionFilterHint(emotionList = []) {
+  if (!selectedEmotionFilter) {
+    emotionFilterHint.classList.add("hidden");
+    emotionFilterHint.textContent = "";
+    return;
+  }
+
+  const emotion = emotionList.find((e) => e.name === selectedEmotionFilter);
+  const emoji = emotion?.emoji || "💭";
+  emotionFilterHint.textContent = `${emoji} ${selectedEmotionFilter} 감정이 두드러진 날짜가 달력에 표시됩니다. 다시 클릭하면 해제돼요.`;
+  emotionFilterHint.classList.remove("hidden");
 }
 
 function renderListView(monthEntries) {
@@ -368,17 +425,29 @@ function renderCalendarView(monthEntries) {
     const entry = entryMap[day];
     const dayOfWeek = new Date(viewYear, viewMonth, day).getDay();
     const isToday = dateStr === todayStr;
+    const filterActive = Boolean(selectedEmotionFilter);
+    const emotionPct = entry ? getEmotionPercentage(entry, selectedEmotionFilter) : 0;
+    const isMatch = entry && filterActive && isEmotionProminent(entry, selectedEmotionFilter);
+    const isDimmed = entry && filterActive && !isMatch;
+    const highlightColor = EMOTION_COLORS[selectedEmotionFilter] || EMOTION_COLORS.default;
 
     let classes = "calendar-day";
     if (dayOfWeek === 0) classes += " sunday";
     if (dayOfWeek === 6) classes += " saturday";
     if (isToday) classes += " today";
     if (entry) classes += " has-entry";
+    if (isMatch) classes += " emotion-highlight";
+    if (isDimmed) classes += " emotion-dimmed";
+
+    const highlightStyle = isMatch
+      ? ` style="--highlight-color: ${highlightColor}"`
+      : "";
 
     html += `
-      <div class="${classes}" data-id="${entry ? entry.id : ""}" ${entry ? 'role="button" tabindex="0"' : ""}>
+      <div class="${classes}" data-id="${entry ? entry.id : ""}"${highlightStyle} ${entry ? 'role="button" tabindex="0"' : ""}>
         <span class="calendar-day-num">${day}</span>
-        ${entry ? `<span class="calendar-day-emoji">${entry.dominantEmoji}</span>` : ""}
+        ${entry ? `<span class="calendar-day-emoji">${isMatch ? entry.emotions.find((e) => e.name === selectedEmotionFilter)?.emoji || entry.dominantEmoji : entry.dominantEmoji}</span>` : ""}
+        ${isMatch ? `<span class="calendar-day-badge">${emotionPct}%</span>` : ""}
       </div>
     `;
   }
@@ -398,6 +467,10 @@ function renderCalendarView(monthEntries) {
 
 function switchView(view) {
   currentView = view;
+  if (view === "list") {
+    selectedEmotionFilter = null;
+  }
+
   viewListBtn.classList.toggle("active", view === "list");
   viewCalendarBtn.classList.toggle("active", view === "calendar");
   viewListBtn.setAttribute("aria-pressed", view === "list");
@@ -418,6 +491,7 @@ function changeMonth(delta) {
     viewMonth = 11;
     viewYear -= 1;
   }
+  selectedEmotionFilter = null;
   loadAndRender();
 }
 

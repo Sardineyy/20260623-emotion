@@ -502,10 +502,38 @@ body {
   gap: 0.35rem;
   padding: 0.35rem 0.75rem;
   background: rgba(255, 255, 255, 0.75);
+  border: 2px solid transparent;
   border-radius: 999px;
+  font-family: inherit;
   font-size: 0.8rem;
   font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
   box-shadow: 0 2px 8px rgba(167, 139, 250, 0.1);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.summary-chip:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.18);
+}
+
+.summary-chip.active {
+  background: white;
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+  font-weight: 600;
+}
+
+.emotion-filter-hint {
+  font-size: 0.8rem;
+  color: #7c3aed;
+  margin: -0.5rem 0 1rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(237, 233, 254, 0.5);
+  border-radius: var(--radius-sm);
+  text-align: center;
 }
 
 .summary-chip-emoji {
@@ -632,6 +660,42 @@ body {
 .calendar-day.has-entry:hover {
   background: rgba(237, 233, 254, 0.7);
   transform: scale(1.05);
+}
+
+.calendar-day.emotion-highlight {
+  background: color-mix(in srgb, var(--highlight-color, #c4b5fd) 28%, white);
+  border-color: var(--highlight-color, #a78bfa);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--highlight-color, #c4b5fd) 35%, transparent);
+  transform: scale(1.06);
+  z-index: 1;
+}
+
+.calendar-day.emotion-highlight:hover {
+  background: color-mix(in srgb, var(--highlight-color, #c4b5fd) 38%, white);
+  transform: scale(1.08);
+}
+
+.calendar-day.emotion-dimmed {
+  opacity: 0.3;
+  filter: grayscale(0.4);
+}
+
+.calendar-day.emotion-dimmed:hover {
+  opacity: 0.55;
+  transform: none;
+}
+
+.calendar-day-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  padding: 0.1rem 0.3rem;
+  border-radius: 999px;
+  background: var(--highlight-color, #a78bfa);
+  color: white;
+  line-height: 1.2;
 }
 
 .calendar-day.today {

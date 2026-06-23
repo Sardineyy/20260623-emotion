@@ -81,10 +81,10 @@
           <span aria-hidden="true">📚</span> 나의 일기 기록
         </h2>
         <div class="view-toggle" role="group" aria-label="보기 방식 선택">
-          <button type="button" id="view-list" class="toggle-btn active" aria-pressed="true">
+          <button type="button" id="view-list" class="toggle-btn" aria-pressed="false">
             📋 리스트
           </button>
-          <button type="button" id="view-calendar" class="toggle-btn" aria-pressed="false">
+          <button type="button" id="view-calendar" class="toggle-btn active" aria-pressed="true">
             📅 달력
           </button>
         </div>
@@ -98,12 +98,13 @@
 
       <!-- 월간 감정 요약 -->
       <div id="month-summary" class="month-summary" aria-label="이번 달 감정 요약"></div>
+      <p id="emotion-filter-hint" class="emotion-filter-hint hidden" aria-live="polite"></p>
 
       <!-- 리스트 뷰 -->
-      <div id="list-view" class="list-view"></div>
+      <div id="list-view" class="list-view hidden"></div>
 
       <!-- 달력 뷰 -->
-      <div id="calendar-view" class="calendar-view hidden">
+      <div id="calendar-view" class="calendar-view">
         <div class="calendar-weekdays">
           <span>일</span><span>월</span><span>화</span><span>수</span>
           <span>목</span><span>금</span><span>토</span>

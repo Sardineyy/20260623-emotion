@@ -1,5 +1,5 @@
 // API 키는 브라우저에 넣지 않습니다.
-// Vercel 서버(api/analyze.js)가 환경 변수 GEMINI_API_KEY로 Gemini를 호출합니다.
+// Vercel 서버(api/analyze.js)가 환경 변수 Gemini_api_key로 Gemini를 호출합니다.
 const ANALYZE_API_URL = "/api/analyze";
 
 const STORAGE_KEY = "ai-emotion-diary-entries";

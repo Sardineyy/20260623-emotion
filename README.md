@@ -11,7 +11,7 @@ Gemini API로 하루의 감정을 분석해 주는 웹 기반 일기장입니다
 ```
 브라우저 (script.js)  →  /api/analyze (Vercel 서버)  →  Gemini API
                               ↑
-                    GEMINI_API_KEY (환경 변수, 비공개)
+                    Gemini_api_key (환경 변수, 비공개)
 ```
 
 ## 시작하기
@@ -31,7 +31,7 @@ npm i -g vercel
 
 # 프로젝트 폴더에서
 cp .env.example .env
-# .env 파일을 열어 GEMINI_API_KEY 값을 입력
+# .env 파일을 열어 Gemini_api_key 값을 입력
 
 vercel dev
 ```
@@ -64,7 +64,7 @@ git push -u origin main
 
 | Name | Value |
 |------|-------|
-| `GEMINI_API_KEY` | Google AI Studio에서 발급받은 키 |
+| `Gemini_api_key` | Google AI Studio에서 발급받은 키 |
 
 5. **Deploy** 를 클릭합니다.
 
